@@ -1,0 +1,17 @@
+version: '3.1'
+
+services:
+
+  postgress:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: quarkus
+      POSTGRES_PASSWORD: quarkus
+    volumes:
+      - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+    restart: "no" 
+#    networks:
+#      - accounts-quarkus
+

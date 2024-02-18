@@ -6,8 +6,8 @@ import io.crabzilla.rinha2024.account.model.AccountStateFactory
 import io.crabzilla.rinha2024.account.model.CustomerAccount
 import io.crabzilla.rinha2024.account.model.CustomerAccountCommand
 import io.crabzilla.rinha2024.account.model.CustomerAccountEvent
-import io.crabzilla.rinha2024.account.model.customerDecideFn
-import io.crabzilla.rinha2024.account.model.customerEvolveFn
+import io.crabzilla.rinha2024.account.model.accountDecideFn
+import io.crabzilla.rinha2024.account.model.accountEvolveFn
 import io.github.crabzilla.context.CrabzillaContext
 import io.github.crabzilla.jackson.JacksonJsonObjectSerDer
 import io.github.crabzilla.writer.WriterApi
@@ -16,7 +16,6 @@ import io.github.crabzilla.writer.WriterConfig
 import io.vertx.core.json.JsonObject
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.inject.Inject
-import java.time.Instant
 
 class AccountConfig {
 
@@ -28,8 +27,8 @@ class AccountConfig {
             val config =
                 WriterConfig(
                     initialStateFactory = AccountStateFactory(),
-                    evolveFunction = customerEvolveFn,
-                    decideFunction = customerDecideFn,
+                    evolveFunction = accountEvolveFn,
+                    decideFunction = accountDecideFn,
                     eventSerDer = JacksonJsonObjectSerDer(objectMapper, clazz = CustomerAccountEvent::class),
                     commandSerDer = JacksonJsonObjectSerDer(objectMapper, clazz = CustomerAccountCommand::class),
                     viewEffect = AccountViewEffect(mapStateToView),

@@ -9,8 +9,8 @@ import io.crabzilla.rinha2024.account.model.CustomerAccountEvent
 import io.crabzilla.rinha2024.account.model.CustomerAccountEvent.CustomerAccountRegistered
 import io.crabzilla.rinha2024.account.model.CustomerAccountEvent.WithdrawCommitted
 import io.crabzilla.rinha2024.account.model.LimitExceededException
-import io.crabzilla.rinha2024.account.model.customerDecideFn
-import io.crabzilla.rinha2024.account.model.customerEvolveFn
+import io.crabzilla.rinha2024.account.model.accountDecideFn
+import io.crabzilla.rinha2024.account.model.accountEvolveFn
 import io.github.crabzilla.core.CrabzillaCommandsSession
 import io.github.crabzilla.core.TestSpecification
 import io.kotest.matchers.equality.shouldBeEqualToIgnoringFields
@@ -47,8 +47,8 @@ class CustomerAccountSpecsTest {
     session =
       CrabzillaCommandsSession(
         initialState = CustomerAccount(id = 0, limit = 0, balance = 0),
-        evolveFunction = customerEvolveFn,
-        decideFunction = customerDecideFn,
+        evolveFunction = accountEvolveFn,
+        decideFunction = accountDecideFn,
       )
   }
 

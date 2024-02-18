@@ -39,7 +39,7 @@ sealed class CustomerAccountEvent(open val date: LocalDateTime) {
   ) : CustomerAccountEvent(date)
 }
 
-val customerEvolveFn: (CustomerAccount, CustomerAccountEvent) -> CustomerAccount = {
+val accountEvolveFn: (CustomerAccount, CustomerAccountEvent) -> CustomerAccount = {
     state: CustomerAccount, event: CustomerAccountEvent ->
   fun newList(): MutableList<CustomerAccountEvent> {
     state.lastTenTransactions.add(event)

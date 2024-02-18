@@ -22,7 +22,7 @@ sealed interface CustomerAccountCommand {
   data class CommitNewWithdraw(val amount: Int, val description: String) : CustomerAccountCommand
 }
 
-val customerDecideFn: (state: CustomerAccount, command: CustomerAccountCommand) -> List<CustomerAccountEvent> =
+val accountDecideFn: (state: CustomerAccount, command: CustomerAccountCommand) -> List<CustomerAccountEvent> =
   { state, command ->
     when (command) {
       is RegisterNewAccount -> state.register(id = command.id, limit = command.limit, balance = command.balance)

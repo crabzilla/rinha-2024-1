@@ -65,7 +65,7 @@ class CustomerAccountSpecsTest {
   }
 
   @Test
-  fun `given a RegisterNewAccount then a DepositCommitted $20, the state and events are correct`() {
+  fun `given a RegisterNewAccount then a CommitNewDeposit $20, the state and events are correct`() {
     TestSpecification(session)
       .whenCommand(RegisterNewAccount(id, limit = 10, balance = 5))
       .whenCommand(CommitNewDeposit(amount = 20, description = "ya ya"))
@@ -86,7 +86,7 @@ class CustomerAccountSpecsTest {
   }
 
   @Test
-  fun `given a RegisterNewAccount then a WithdrawCommitted $10, the state and events are correct`() {
+  fun `given a RegisterNewAccount then a CommitNewWithdraw $10, the state and events are correct`() {
     TestSpecification(session)
       .whenCommand(RegisterNewAccount(id, limit = 50, balance = 100))
       .whenCommand(CommitNewWithdraw(amount = 10, description = "ya ya"))
@@ -106,7 +106,7 @@ class CustomerAccountSpecsTest {
   }
 
   @Test
-  fun `given a RegisterNewAccount $5 then a WithdrawCommitted $100, the state and events are correct`() {
+  fun `given a RegisterNewAccount $5 then a CommitNewWithdraw $100, the state and events are correct`() {
     TestSpecification(session)
       .whenCommand(RegisterNewAccount(id, limit = 0, balance = 5))
       .whenCommand(CommitNewWithdraw(amount = 10, description = "ya ya"))
@@ -125,7 +125,7 @@ class CustomerAccountSpecsTest {
   }
 
   @Test
-  fun `given a RegisterNewAccount then 10 DepositCommitted then 5 WithdrawCommitted $1, the state and events are correct`() {
+  fun `given a RegisterNewAccount then 10 CommitNewDeposit then 5 CommitNewWithdraw $1, the state and events are correct`() {
     TestSpecification(session)
       .whenCommand(RegisterNewAccount(id, limit = 0, balance = 0))
       .whenCommand(CommitNewDeposit(amount = 1, description = "ya ya"))

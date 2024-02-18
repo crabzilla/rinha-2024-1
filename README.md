@@ -1,7 +1,7 @@
 # rinha-2004-1
 
 * Using Quarkus
-* Using Crabzilla (not published yet)
+* Using Crabzilla (so far, published only to jitpack)
 * Using Event Sourcing (not so competitive in terms of performance)
 
 # TODO

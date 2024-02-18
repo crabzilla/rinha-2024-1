@@ -9,3 +9,9 @@
 * Publish to Docker
 * Test it, get feedback and tune it
 * Enjoy
+
+# How to run
+
+* `docker-compose up`             # to start postgres
+* `mvn compile quarkus:dev`       # to start app
+* http://localhost:8080/q/swagger-ui/

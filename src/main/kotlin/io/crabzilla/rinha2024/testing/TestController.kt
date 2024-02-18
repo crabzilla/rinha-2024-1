@@ -7,7 +7,10 @@ import io.crabzilla.rinha2024.account.model.CustomerAccountCommand.RegisterNewAc
 import io.crabzilla.rinha2024.account.model.CustomerAccountEvent
 import io.github.crabzilla.stream.TargetStream
 import io.github.crabzilla.writer.WriterApi
+import io.smallrye.mutiny.Uni
+import io.smallrye.mutiny.vertx.UniHelper
 import io.vertx.core.Future
+import io.vertx.core.json.JsonObject
 import jakarta.inject.Inject
 import jakarta.ws.rs.Consumes
 import jakarta.ws.rs.GET
@@ -29,8 +32,8 @@ class TestController {
     @GET
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    fun dump(): Future<Void> {
-        return  testRepository.printOverview().mapEmpty()
+    fun dump(): Uni<JsonObject> {
+        return  UniHelper.toUni(testRepository.printOverview())
     }
 
 //    @Path("/init")

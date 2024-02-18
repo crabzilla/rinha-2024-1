@@ -24,22 +24,6 @@ class CustomerAccountSpecsTest {
   private val id = 1
   private lateinit var session: CrabzillaCommandsSession<CustomerAccountCommand, CustomerAccount, CustomerAccountEvent>
 
-  private fun CustomerAccount.shouldBe(customerAccount: CustomerAccount) {
-    try {
-      this.shouldBeEqualToIgnoringFields(customerAccount, CustomerAccount::lastTenTransactions)
-    } catch (e: Exception) {
-      e.printStackTrace()
-    }
-  }
-
-  private fun CustomerAccountEvent.shouldBe(customerAccountEvent: CustomerAccountEvent) {
-    try {
-      this.shouldBeEqualToIgnoringFields(customerAccountEvent, CustomerAccountEvent::date)
-    } catch (e: Exception) {
-      e.printStackTrace()
-    }
-  }
-
   // TODO add a test using a custom timeGenerator and then assert on events dates
 
   @BeforeEach
@@ -228,4 +212,20 @@ class CustomerAccountSpecsTest {
         it.lastException() shouldBe LimitExceededException(amount = 15, limit = 0)
       }
   }
+
+    private fun CustomerAccount.shouldBe(customerAccount: CustomerAccount) {
+        try {
+            this.shouldBeEqualToIgnoringFields(customerAccount, CustomerAccount::lastTenTransactions)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun CustomerAccountEvent.shouldBe(customerAccountEvent: CustomerAccountEvent) {
+        try {
+            this.shouldBeEqualToIgnoringFields(customerAccountEvent, CustomerAccountEvent::date)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
 }

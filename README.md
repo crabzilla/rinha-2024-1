@@ -7,7 +7,7 @@
 # TODO
 
 * Publish to Docker
-* Test it, get feedback and tune it
+* Test it, get feedback and finx/tune it
 * Enjoy
 
 # How to run

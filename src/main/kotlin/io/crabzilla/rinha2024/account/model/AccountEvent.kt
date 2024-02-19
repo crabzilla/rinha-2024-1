@@ -20,7 +20,7 @@ sealed class CustomerAccountEvent(open val date: LocalDateTime) {
     val id: Int,
     val limit: Int,
     val balance: Int,
-    override val date: LocalDateTime = LocalDateTime.now(),
+    override val date: LocalDateTime,
   ) :
     CustomerAccountEvent(date)
 
@@ -28,14 +28,14 @@ sealed class CustomerAccountEvent(open val date: LocalDateTime) {
     val amount: Int,
     val description: String,
     val balance: Int,
-    override val date: LocalDateTime = LocalDateTime.now(),
+    override val date: LocalDateTime,
   ) : CustomerAccountEvent(date)
 
   data class WithdrawCommitted(
     val amount: Int,
     val description: String,
     val balance: Int,
-    override val date: LocalDateTime = LocalDateTime.now(),
+    override val date: LocalDateTime,
   ) : CustomerAccountEvent(date)
 }
 

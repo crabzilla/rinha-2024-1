@@ -2,7 +2,6 @@ package io.crabzilla.rinha2024.accounts.account
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.crabzilla.rinha2024.account.effects.AccountViewEffect
-import io.crabzilla.rinha2024.account.model.AccountStateFactory
 import io.crabzilla.rinha2024.account.model.CustomerAccount
 import io.crabzilla.rinha2024.account.model.CustomerAccountCommand
 import io.crabzilla.rinha2024.account.model.CustomerAccountEvent
@@ -16,6 +15,7 @@ import io.github.crabzilla.writer.WriterConfig
 import io.vertx.core.json.JsonObject
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.inject.Inject
+import java.time.LocalDateTime
 
 class AccountConfig {
 
@@ -26,9 +26,10 @@ class AccountConfig {
     fun accountsWriter(context: CrabzillaContext): WriterApi<CustomerAccount, CustomerAccountCommand, CustomerAccountEvent> {
             val config =
                 WriterConfig(
-                    initialStateFactory = AccountStateFactory(),
+                    initialState = CustomerAccount(id = 0, limit = 0, balance = 0),
                     evolveFunction = accountEvolveFn,
                     decideFunction = accountDecideFn,
+                    injectorFunction = { account -> account.timeGenerator = { LocalDateTime.now() }; account  },
                     eventSerDer = JacksonJsonObjectSerDer(objectMapper, clazz = CustomerAccountEvent::class),
                     commandSerDer = JacksonJsonObjectSerDer(objectMapper, clazz = CustomerAccountCommand::class),
                     viewEffect = AccountViewEffect(mapStateToView),

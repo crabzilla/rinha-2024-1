@@ -4,22 +4,25 @@ package io.crabzilla.rinha2024.account.model
 import io.crabzilla.rinha2024.account.model.CustomerAccountEvent.CustomerAccountRegistered
 import io.crabzilla.rinha2024.account.model.CustomerAccountEvent.DepositCommitted
 import io.crabzilla.rinha2024.account.model.CustomerAccountEvent.WithdrawCommitted
-import io.github.crabzilla.writer.InitialStateFactory
 import java.time.LocalDateTime
 
 data class CustomerAccount(
   val id: Int,
   val limit: Int,
   val balance: Int = 0,
-  val lastTenTransactions: MutableList<CustomerAccountEvent> = withMaxSize(10)
+  val lastTenTransactions: MutableList<CustomerAccountEvent> = withMaxSize(10),
 ) {
   // This state model also have the last 10 transactions. Just to skip read/view model and optimize it for perf.
 
-  @Transient
-  var timeGenerator: () -> LocalDateTime = { LocalDateTime.now() }
+  var timeGenerator: (() -> LocalDateTime)? = null
 
   fun register(id: Int, limit: Int, balance: Int): List<CustomerAccountEvent> {
-    return listOf(CustomerAccountRegistered(id = id, limit = limit, balance = balance))
+    return listOf(CustomerAccountRegistered(
+      id = id,
+      limit = limit,
+      balance = balance,
+      date = timeGenerator!!.invoke()
+    ))
   }
 
   fun deposit(amount: Int, description: String): List<CustomerAccountEvent> {
@@ -28,7 +31,7 @@ data class CustomerAccount(
         amount = amount,
         description = description,
         balance = balance.plus(amount),
-        timeGenerator.invoke()
+        date = timeGenerator!!.invoke()
       ),
     )
   }
@@ -43,7 +46,7 @@ data class CustomerAccount(
         amount = amount,
         description = description,
         balance = newBalance,
-        timeGenerator.invoke()
+        date = timeGenerator!!.invoke()
       ),
     )
   }
@@ -60,11 +63,5 @@ fun <T> withMaxSize(maxSize: Int): MutableList<T> {
       }
       return super.add(element)
     }
-  }
-}
-
-class AccountStateFactory: InitialStateFactory<CustomerAccount> {
-  override fun get(): CustomerAccount {
-    return CustomerAccount(id = 0, limit = 0, balance = 0)
   }
 }

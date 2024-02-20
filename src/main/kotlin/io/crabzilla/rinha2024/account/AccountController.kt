@@ -1,7 +1,7 @@
 package io.crabzilla.rinha2024.account
 
 
-import io.crabzilla.rinha2024.account.AccountConfig.Companion.mapStateToView
+import io.crabzilla.rinha2024.account.AccountConfig.Companion.MAP_ACCOUNT_TO_JSON_VIEW_FUNCTION
 import io.crabzilla.rinha2024.account.model.CustomerAccount
 import io.crabzilla.rinha2024.account.model.CustomerAccountCommand
 import io.crabzilla.rinha2024.account.model.CustomerAccountCommand.CommitNewDeposit
@@ -67,7 +67,7 @@ class AccountController {
         val targetStream = TargetStream(name = "Accounts@$id")
         val command = mapRequestToCommand(request)
         val viewModelFuture = commandHandler.handle(targetStream, command)
-            .map { mapStateToView(it.snapshot.state) }
+            .map { MAP_ACCOUNT_TO_JSON_VIEW_FUNCTION(it.snapshot.state) }
             .map { json ->
                 val saldo = json.getJsonObject("saldo")
                 saldo.put("data_extrato", LocalDateTime.now())

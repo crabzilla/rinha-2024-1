@@ -18,7 +18,6 @@ import io.github.crabzilla.stream.StreamSnapshot
 import io.vertx.core.json.JsonObject
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.inject.Inject
-import java.time.Duration
 
 
 class AccountConfig {
@@ -47,7 +46,7 @@ class AccountConfig {
 //                    injectorFunction = { account -> account.timeGenerator = { LocalDateTime.now() }; account  },
                 eventSerDer = JacksonJsonObjectSerDer(objectMapper, clazz = CustomerAccountEvent::class),
                 commandSerDer = JacksonJsonObjectSerDer(objectMapper, clazz = CustomerAccountCommand::class),
-                viewEffect = AccountViewEffect(mapStateToView),
+                viewEffect = AccountViewEffect(MAP_ACCOUNT_TO_JSON_VIEW_FUNCTION),
                 snapshotCache = cache,
                 notifyPostgres = false,
                 persistCommands = false
@@ -56,7 +55,7 @@ class AccountConfig {
     }
 
     companion object {
-        val mapStateToView: (CustomerAccount) -> JsonObject = { state ->
+        val MAP_ACCOUNT_TO_JSON_VIEW_FUNCTION: (CustomerAccount) -> JsonObject = { state ->
             val saldo = JsonObject()
                 .put("limite", state.limit)
                 .put("total", state.balance)

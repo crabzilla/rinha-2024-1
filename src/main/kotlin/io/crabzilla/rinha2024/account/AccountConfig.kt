@@ -29,8 +29,8 @@ class AccountConfig {
     @ApplicationScoped
     fun accountCache(): Cache<Int, StreamSnapshot<CustomerAccount>> {
         return Caffeine.newBuilder()
-            .maximumSize(10_000)
-            .expireAfterWrite(Duration.ofMinutes(7))
+            .initialCapacity(5)
+            .maximumSize(5)
             .build()
     }
 

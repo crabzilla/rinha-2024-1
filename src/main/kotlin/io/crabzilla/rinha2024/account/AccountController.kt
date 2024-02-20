@@ -1,18 +1,18 @@
 package io.crabzilla.rinha2024.account
 
 
+import io.crabzilla.rinha2024.account.AccountConfig.Companion.mapStateToView
 import io.crabzilla.rinha2024.account.model.CustomerAccount
 import io.crabzilla.rinha2024.account.model.CustomerAccountCommand
 import io.crabzilla.rinha2024.account.model.CustomerAccountCommand.CommitNewDeposit
 import io.crabzilla.rinha2024.account.model.CustomerAccountCommand.CommitNewWithdraw
 import io.crabzilla.rinha2024.account.model.CustomerAccountEvent
 import io.crabzilla.rinha2024.account.model.LimitExceededException
-import io.crabzilla.rinha2024.accounts.account.AccountConfig.Companion.mapStateToView
+import io.crabzilla.rinha2024.account.repository.AccountPgRepository
+import io.github.crabzilla.command.CommandHandler
 import io.github.crabzilla.stream.TargetStream
-import io.github.crabzilla.writer.WriterApi
 import io.smallrye.mutiny.Uni
 import io.smallrye.mutiny.vertx.UniHelper
-import io.vertx.core.Future
 import io.vertx.core.Future.failedFuture
 import io.vertx.core.json.JsonObject
 import jakarta.inject.Inject
@@ -33,10 +33,10 @@ import java.time.LocalDateTime
 class AccountController {
 
     @Inject
-    private lateinit var accountRepository: AccountRepository
+    private lateinit var accountPgRepository: AccountPgRepository
 
     @Inject
-    private lateinit var writerApi: WriterApi<CustomerAccount, CustomerAccountCommand, CustomerAccountEvent>
+    private lateinit var commandHandler: CommandHandler<CustomerAccount, CustomerAccountCommand, CustomerAccountEvent>
 
     @Path("/clientes/{id}/extrato")
     @GET
@@ -46,7 +46,7 @@ class AccountController {
         if ((id < 0 || id > 5)) {
             throw NotFoundException()
         }
-        return accountRepository.getAccount(id)
+        return accountPgRepository.getAccount(id)
             .map { json ->
                 val saldo = json.getJsonObject("saldo")
                 saldo.put("data_extrato", LocalDateTime.now())
@@ -67,7 +67,7 @@ class AccountController {
         }
         val targetStream = TargetStream(name = "Accounts@$id")
         val command = mapRequestToCommand(request)
-        val viewModelFuture= writerApi.handle(targetStream, command)
+        val viewModelFuture = commandHandler.handle(targetStream, command)
             .map { mapStateToView(it.snapshot.state) }
             .map { json ->
                 val saldo = json.getJsonObject("saldo")

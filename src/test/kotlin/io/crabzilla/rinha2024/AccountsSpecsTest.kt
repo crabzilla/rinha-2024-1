@@ -18,18 +18,19 @@ import io.kotest.matchers.equals.shouldBeEqual
 import java.time.LocalDateTime
 
 class AccountsSpecsTest : BehaviorSpec({
+
     val id = 1
-    val eventsDate = LocalDateTime.now()
+    val now = LocalDateTime.now()
     val initialState = CustomerAccount(id = 0, limit = 0, balance = 0)
 
     val session = Session(
         initialState = initialState,
         evolveFunction = accountEvolveFn,
         decideFunction = accountDecideFn,
-        injectorFunction = { account -> account.timeGenerator = { eventsDate }; account}
+        injectFunction = { account -> account.timeGenerator = { now }; account }
     )
 
-    Given("a RegisterNewAccount command") {
+    Given("a RegisterNewAccount command #1") {
         val command = RegisterNewAccount(id, limit = 10, balance = 5)
         When("it's handled") {
             session.reset().decide(command)
@@ -38,18 +39,13 @@ class AccountsSpecsTest : BehaviorSpec({
             }
             Then("the events are correct") {
                 session.appliedEvents() shouldBeEqual listOf(
-                    CustomerAccountRegistered(
-                        id,
-                        limit = 10,
-                        balance = 5,
-                        date = eventsDate
-                    )
+                    CustomerAccountRegistered(id, limit = 10, balance = 5, date = now)
                 )
             }
         }
     }
 
-    Given("a RegisterNewAccount command 2") {
+    Given("a RegisterNewAccount command #2") {
         val command1 = RegisterNewAccount(id, limit = 10, balance = 5)
         And("a CommitNewDeposit ") {
             val command2 = CommitNewDeposit(amount = 20, description = "ya ya")
@@ -57,35 +53,22 @@ class AccountsSpecsTest : BehaviorSpec({
                 session.reset().decide(command1).decide(command2)
                 Then("the state is correct") {
                     val expectedTransactions = mutableListOf<CustomerAccountEvent>(
-                        DepositCommitted(
-                            amount = 20,
-                            description = "ya ya",
-                            balance = 25,
-                            date = eventsDate
-                        )
+                        DepositCommitted(amount = 20, description = "ya ya", balance = 25, date = now)
                     )
-                    session.currentState() shouldBeEqual CustomerAccount(id, limit = 10, balance = 25, lastTenTransactions = expectedTransactions)
+                    session.currentState() shouldBeEqual
+                            CustomerAccount(id, limit = 10, balance = 25, lastTenTransactions = expectedTransactions)
                 }
                 Then("the events are correct") {
                     session.appliedEvents() shouldBeEqual listOf(
-                        CustomerAccountRegistered(
-                            id,
-                            limit = 10,
-                            balance = 5,
-                            date = eventsDate
-                        ), DepositCommitted(
-                            amount = 20,
-                            description = "ya ya",
-                            balance = 25,
-                            date = eventsDate
-                        )
+                        CustomerAccountRegistered(id, limit = 10, balance = 5, date = now),
+                        DepositCommitted(amount = 20, description = "ya ya", balance = 25, date = now)
                     )
                 }
             }
         }
     }
 
-    Given("a RegisterNewAccount command 3") {
+    Given("a RegisterNewAccount command #3") {
         val command1 = RegisterNewAccount(id, limit = 10, balance = 5)
         And("a CommitNewWithDraw ") {
             val command2 = CommitNewWithdraw(amount = 5, description = "i need it")
@@ -95,11 +78,16 @@ class AccountsSpecsTest : BehaviorSpec({
                     amount = 5,
                     description = "i need it",
                     balance = 0,
-                    date = eventsDate
+                    date = now
                 )
                 Then("the state is correct") {
                     val expectedTransactions = mutableListOf<CustomerAccountEvent>(event)
-                    session.currentState() shouldBeEqual CustomerAccount(id, limit = 10, balance = 0, lastTenTransactions = expectedTransactions)
+                    session.currentState() shouldBeEqual CustomerAccount(
+                        id,
+                        limit = 10,
+                        balance = 0,
+                        lastTenTransactions = expectedTransactions
+                    )
                 }
                 Then("the events are correct") {
                     session.appliedEvents() shouldBeEqual listOf(
@@ -107,7 +95,7 @@ class AccountsSpecsTest : BehaviorSpec({
                             id,
                             limit = 10,
                             balance = 5,
-                            date = eventsDate
+                            date = now
                         ), event
                     )
                 }
@@ -115,7 +103,7 @@ class AccountsSpecsTest : BehaviorSpec({
         }
     }
 
-    Given("a RegisterNewAccount command 4") {
+    Given("a RegisterNewAccount command #4") {
         val command1 = RegisterNewAccount(id, limit = 10, balance = 5)
         And("a CommitNewWithDraw exceeding the limit") {
             val command2 = CommitNewWithdraw(amount = 16, description = "i need it")
@@ -132,12 +120,7 @@ class AccountsSpecsTest : BehaviorSpec({
                 }
                 Then("the events are correct") {
                     session.appliedEvents() shouldBeEqual listOf(
-                        CustomerAccountRegistered(
-                            id,
-                            limit = 10,
-                            balance = 5,
-                            date = eventsDate
-                        )
+                        CustomerAccountRegistered(id, limit = 10, balance = 5, date = now)
                     )
                 }
             }

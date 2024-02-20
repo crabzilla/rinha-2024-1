@@ -1,15 +1,8 @@
 package io.crabzilla.rinha2024.testing
 
 
-import io.crabzilla.rinha2024.account.model.CustomerAccount
-import io.crabzilla.rinha2024.account.model.CustomerAccountCommand
-import io.crabzilla.rinha2024.account.model.CustomerAccountCommand.RegisterNewAccount
-import io.crabzilla.rinha2024.account.model.CustomerAccountEvent
-import io.github.crabzilla.stream.TargetStream
-import io.github.crabzilla.writer.WriterApi
 import io.smallrye.mutiny.Uni
 import io.smallrye.mutiny.vertx.UniHelper
-import io.vertx.core.Future
 import io.vertx.core.json.JsonObject
 import jakarta.inject.Inject
 import jakarta.ws.rs.Consumes
@@ -23,9 +16,6 @@ import jakarta.ws.rs.core.MediaType
 class TestController {
 
     @Inject
-    private lateinit var writerApi: WriterApi<CustomerAccount, CustomerAccountCommand, CustomerAccountEvent>
-
-    @Inject
     private lateinit var testRepository: TestRepository
 
     @Path("/dump")
@@ -33,8 +23,11 @@ class TestController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     fun dump(): Uni<JsonObject> {
-        return  UniHelper.toUni(testRepository.printOverview())
+        return UniHelper.toUni(testRepository.printOverview())
     }
+
+//    @Inject
+//    private lateinit var writerApi: CommandHandler<CustomerAccount, CustomerAccountCommand, CustomerAccountEvent>
 
 //    @Path("/init")
 //    @GET
@@ -80,4 +73,4 @@ class TestController {
 //                .onSuccess { testRepository.printOverview() }
 //    }
 
-  }
+}

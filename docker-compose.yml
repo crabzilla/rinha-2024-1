@@ -11,7 +11,7 @@ services:
       - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
     ports:
       - "5432:5432"
-    restart: "no" 
+    restart: "no"
 #    networks:
 #      - accounts-quarkus
 

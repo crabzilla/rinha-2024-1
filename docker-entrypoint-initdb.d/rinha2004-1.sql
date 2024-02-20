@@ -29,7 +29,7 @@ VALUES ('018db57a-1061-7d65-bf70-5a66614fd2ed', 'CustomerAccountRegistered',
         5, 1, '018db57a-10a5-7dbe-855b-707e6c470eaf', '018db57a-10a5-7dbe-855b-707e6c470eaf',
         '2024-02-17T05:11:32.249280Z');
 
-CREATE UNLOGGED TABLE ACCOUNTS_VIEW
+CREATE UNLOGGED TABLE accounts_view
 (
     id int2         NOT NULL UNIQUE,
     view_model JSON NOT NULL

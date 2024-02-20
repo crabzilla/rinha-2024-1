@@ -8,7 +8,6 @@ import io.crabzilla.rinha2024.account.model.CustomerAccountCommand.CommitNewDepo
 import io.crabzilla.rinha2024.account.model.CustomerAccountCommand.CommitNewWithdraw
 import io.crabzilla.rinha2024.account.model.CustomerAccountEvent
 import io.crabzilla.rinha2024.account.model.LimitExceededException
-import io.crabzilla.rinha2024.account.repository.AccountPgRepository
 import io.github.crabzilla.command.CommandHandler
 import io.github.crabzilla.stream.TargetStream
 import io.smallrye.mutiny.Uni

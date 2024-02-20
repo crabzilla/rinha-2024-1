@@ -1,6 +1,5 @@
-package io.crabzilla.rinha2024.account.repository
+package io.crabzilla.rinha2024.account
 
-import io.crabzilla.rinha2024.account.AccountRepository
 import io.smallrye.mutiny.Uni
 import io.smallrye.mutiny.vertx.UniHelper
 import io.vertx.core.json.JsonObject
@@ -11,12 +10,12 @@ import jakarta.inject.Inject
 import jakarta.ws.rs.NotFoundException
 
 @ApplicationScoped
-class AccountPgRepository : AccountRepository {
+class AccountPgRepository {
 
     @Inject
     private lateinit var pgPool: Pool
 
-    override fun getAccount(id: Int): Uni<JsonObject> {
+    fun getAccount(id: Int): Uni<JsonObject> {
         val databaseResultFuture = pgPool
             .preparedQuery(SQL_SELECT)
             .execute(Tuple.of(id))

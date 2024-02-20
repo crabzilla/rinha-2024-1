@@ -1,6 +1,8 @@
 package io.crabzilla.rinha2024.account
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.github.benmanes.caffeine.cache.Cache
+import com.github.benmanes.caffeine.cache.Caffeine
 import io.crabzilla.rinha2024.account.effects.AccountViewEffect
 import io.crabzilla.rinha2024.account.model.CustomerAccount
 import io.crabzilla.rinha2024.account.model.CustomerAccountCommand
@@ -12,25 +14,29 @@ import io.github.crabzilla.command.CommandHandlerConfig
 import io.github.crabzilla.command.CommandHandlerImpl
 import io.github.crabzilla.context.CrabzillaContext
 import io.github.crabzilla.jackson.JacksonJsonObjectSerDer
+import io.github.crabzilla.stream.StreamSnapshot
 import io.vertx.core.json.JsonObject
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.inject.Inject
+import java.time.Duration
+
 
 class AccountConfig {
 
     @Inject
     private lateinit var objectMapper: ObjectMapper
 
-//    @ApplicationScoped
-//    fun accountCache(): Cache<Int, StreamSnapshot<CustomerAccount>> {
-//        return Caffeine.newBuilder()
-//            .initialCapacity(5)
-//            .maximumSize(5)
-//            .build()
-//    }
+    @ApplicationScoped
+    fun accountCache(): Cache<Int, StreamSnapshot<CustomerAccount>> {
+        return Caffeine.newBuilder()
+            .initialCapacity(5)
+            .maximumSize(5)
+            .build()
+    }
 
     @ApplicationScoped
-    fun accountsCommandHandler(context: CrabzillaContext)
+    fun accountsCommandHandler(context: CrabzillaContext,
+                               cache: Cache<Int, StreamSnapshot<CustomerAccount>>)
             : CommandHandler<CustomerAccount, CustomerAccountCommand, CustomerAccountEvent> {
 
         val config =
@@ -38,11 +44,11 @@ class AccountConfig {
                 initialState = CustomerAccount(id = 0, limit = 0, balance = 0),
                 evolveFunction = accountEvolveFn,
                 decideFunction = accountDecideFn,
-//              injectorFunction = { account -> account.timeGenerator = { LocalDateTime.now() }; account  },
+//                    injectorFunction = { account -> account.timeGenerator = { LocalDateTime.now() }; account  },
                 eventSerDer = JacksonJsonObjectSerDer(objectMapper, clazz = CustomerAccountEvent::class),
                 commandSerDer = JacksonJsonObjectSerDer(objectMapper, clazz = CustomerAccountCommand::class),
                 viewEffect = AccountViewEffect(mapStateToView),
-                snapshotCache = null,
+                snapshotCache = cache,
                 notifyPostgres = false,
                 persistCommands = false
             )

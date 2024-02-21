@@ -15,15 +15,19 @@ import io.github.crabzilla.command.CommandHandlerImpl
 import io.github.crabzilla.context.CrabzillaContext
 import io.github.crabzilla.jackson.JacksonJsonObjectSerDer
 import io.github.crabzilla.stream.StreamSnapshot
+import io.github.crabzilla.stream.StreamWriterLockEnum
 import io.vertx.core.json.JsonObject
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.inject.Inject
-
+import org.eclipse.microprofile.config.inject.ConfigProperty
 
 class AccountConfig {
 
     @Inject
     private lateinit var objectMapper: ObjectMapper
+
+    @ConfigProperty(name = "locking.implementation")
+    lateinit var lockEnum: StreamWriterLockEnum
 
     @ApplicationScoped
     fun accountCache(): Cache<Int, StreamSnapshot<CustomerAccount>> {
@@ -43,13 +47,13 @@ class AccountConfig {
                 initialState = CustomerAccount(id = 0, limit = 0, balance = 0),
                 evolveFunction = accountEvolveFn,
                 decideFunction = accountDecideFn,
-//                    injectorFunction = { account -> account.timeGenerator = { LocalDateTime.now() }; account  },
                 eventSerDer = JacksonJsonObjectSerDer(objectMapper, clazz = CustomerAccountEvent::class),
                 commandSerDer = JacksonJsonObjectSerDer(objectMapper, clazz = CustomerAccountCommand::class),
                 viewEffect = AccountViewEffect(MAP_ACCOUNT_TO_JSON_VIEW_FUNCTION),
                 snapshotCache = cache,
                 notifyPostgres = false,
-                persistCommands = false
+                persistCommands = false,
+                lockingImplementation = lockEnum
             )
         return CommandHandlerImpl(context, config)
     }

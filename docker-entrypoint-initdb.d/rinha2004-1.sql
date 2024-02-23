@@ -1,4 +1,3 @@
-\connect crabzilla ;
 
 INSERT INTO streams (name, state_type, state_id, created_at, status, migrated_to_stream_id)
 VALUES ('Accounts@1', 'Accounts', '1', '2024-02-17T05:11:32.179299Z', 'OPEN', NULL),

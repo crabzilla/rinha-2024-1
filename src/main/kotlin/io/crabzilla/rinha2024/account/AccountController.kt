@@ -25,6 +25,7 @@ import jakarta.ws.rs.Path
 import jakarta.ws.rs.Produces
 import jakarta.ws.rs.core.MediaType
 import org.jboss.resteasy.reactive.RestPath
+import org.slf4j.LoggerFactory
 import java.time.LocalDateTime
 
 
@@ -42,6 +43,7 @@ class AccountController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     fun getExtrato(@RestPath("id") id: Int): Uni<JsonObject> {
+//        logger.info("Will get account {}", id)
         if ((id < 0 || id > 5)) {
             throw NotFoundException()
         }
@@ -49,6 +51,7 @@ class AccountController {
             .map { json ->
                 val saldo = json.getJsonObject("saldo")
                 saldo.put("data_extrato", LocalDateTime.now())
+//                logger.info("Got it {}", json)
                 json
             }
     }
@@ -100,5 +103,6 @@ class AccountController {
             }
         }
 
+        private val logger = LoggerFactory.getLogger(AccountController::class.java)
     }
 }

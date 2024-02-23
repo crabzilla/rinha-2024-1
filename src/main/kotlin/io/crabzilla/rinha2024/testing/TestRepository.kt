@@ -1,5 +1,6 @@
 package io.crabzilla.rinha2024.testing
 
+import io.crabzilla.rinha2024.CrabzillaConfig
 import io.vertx.core.Future
 import io.vertx.core.json.JsonObject
 import io.vertx.sqlclient.Pool
@@ -7,6 +8,7 @@ import io.vertx.sqlclient.Row
 import io.vertx.sqlclient.RowSet
 import io.vertx.sqlclient.Tuple
 import jakarta.enterprise.context.ApplicationScoped
+import org.slf4j.LoggerFactory
 
 @ApplicationScoped
 class TestRepository(private val pgPool: Pool) {
@@ -33,8 +35,8 @@ class TestRepository(private val pgPool: Pool) {
                 getAccounts().map { json.put("accounts-view", it) }
             }
             .onComplete {
-                println("-------------------------- Crabzilla state overview")
-                println(it.result().encodePrettily())
+                logger.info("-------------------------- Crabzilla state overview")
+                logger.info(it.result()?.encodePrettily())
             }
     }
 
@@ -114,6 +116,8 @@ class TestRepository(private val pgPool: Pool) {
     }
 
     companion object {
+
+        private val logger = LoggerFactory.getLogger(TestRepository::class.java)
 
         private const val SQL_TRUNCATE_ALL = "TRUNCATE streams, events, commands, accounts_view RESTART IDENTITY"
 

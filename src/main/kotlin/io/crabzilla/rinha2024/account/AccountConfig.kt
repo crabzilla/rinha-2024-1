@@ -16,10 +16,12 @@ import io.github.crabzilla.context.CrabzillaContext
 import io.github.crabzilla.jackson.JacksonJsonObjectSerDer
 import io.github.crabzilla.stream.StreamSnapshot
 import io.github.crabzilla.stream.StreamWriterLockEnum
+import io.quarkus.runtime.Startup
 import io.vertx.core.json.JsonObject
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.inject.Inject
 import org.eclipse.microprofile.config.inject.ConfigProperty
+import org.slf4j.LoggerFactory
 
 class AccountConfig {
 
@@ -37,6 +39,7 @@ class AccountConfig {
             .build()
     }
 
+    @Startup
     @ApplicationScoped
     fun accountsCommandHandler(context: CrabzillaContext,
                                cache: Cache<Int, StreamSnapshot<CustomerAccount>>)
@@ -55,10 +58,15 @@ class AccountConfig {
                 persistCommands = false,
                 lockingImplementation = lockEnum
             )
+
+        logger.info("Using lock type: {}", lockEnum)
+
         return CommandHandlerImpl(context, config)
     }
 
     companion object {
+        private val logger = LoggerFactory.getLogger(AccountConfig::class.java)
+
         val MAP_ACCOUNT_TO_JSON_VIEW_FUNCTION: (CustomerAccount) -> JsonObject = { state ->
             val saldo = JsonObject()
                 .put("limite", state.limit)
@@ -84,5 +92,4 @@ class AccountConfig {
         }
 
     }
-
 }

@@ -1,6 +1,3 @@
-CREATE DATABASE crabzilla OWNER quarkus;
-
-\connect crabzilla;
 
 CREATE TYPE stream_status AS ENUM ('OPEN', 'CLOSED', 'MIGRATED');
 

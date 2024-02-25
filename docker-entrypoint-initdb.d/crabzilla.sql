@@ -21,10 +21,10 @@ CREATE UNLOGGED TABLE events
     sequence       BIGINT GENERATED ALWAYS AS IDENTITY (cache 1000) UNIQUE,
     event_type     VARCHAR(100)                           NOT NULL,
     event_payload  JSON                                   NOT NULL,
-    stream_id      INT                                    NOT NULL REFERENCES streams (id),
+    stream_id      INT                                    NOT NULL, -- REFERENCES streams (id),
     version        INT                                    NOT NULL,
-    causation_id   UUID                                   NOT NULL REFERENCES events (id),
-    correlation_id UUID                                   NOT NULL REFERENCES events (id),
+    causation_id   UUID                                   NOT NULL, -- REFERENCES events (id),
+    correlation_id UUID                                   NOT NULL, -- REFERENCES events (id),
     created_at     TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
     UNIQUE (stream_id, version)
 )

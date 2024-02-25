@@ -1,0 +1,33 @@
+version: '3.6'
+
+services:
+
+  rinhadb:
+    image: postgres:latest
+    hostname: rinhadb
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=rinhadb
+      - POSTGRES_USER=rinha
+      - POSTGRES_PASSWORD=rinha123
+    volumes:
+      - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+#      - ./postgresql.conf:/etc/postgresql/postgresql.conf
+#    command: 'postgres -c config_file=/etc/postgresql/postgresql.conf'
+#    deploy:
+#      resources:
+#        limits:
+#          cpus: "1"
+#          memory: "1024MB"
+#    healthcheck:
+#      test: ["CMD-SHELL", "pg_isready"]
+#      interval: 3s
+#      timeout: 2s
+#      retries: 10
+#      start_period: 3s
+
+#networks:
+#  default:
+#    driver: bridge
+#    name: rinha-nginx-2024q1

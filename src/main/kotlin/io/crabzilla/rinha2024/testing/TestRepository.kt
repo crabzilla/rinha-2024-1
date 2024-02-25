@@ -1,6 +1,5 @@
 package io.crabzilla.rinha2024.testing
 
-import io.crabzilla.rinha2024.CrabzillaConfig
 import io.vertx.core.Future
 import io.vertx.core.json.JsonObject
 import io.vertx.sqlclient.Pool

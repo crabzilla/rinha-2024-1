@@ -21,12 +21,12 @@
         <skipITs>true</skipITs>
         <surefire-plugin.version>3.2.5</surefire-plugin.version>
     </properties>
-    <repositories>
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
-    </repositories>
+<!--    <repositories>-->
+<!--        <repository>-->
+<!--            <id>jitpack.io</id>-->
+<!--            <url>https://jitpack.io</url>-->
+<!--        </repository>-->
+<!--    </repositories>-->
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -72,17 +72,17 @@
             <artifactId>quarkus-resteasy-reactive-jackson</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.github.crabzilla.crabzilla</groupId>
+            <groupId>io.github.crabzilla</groupId>
             <artifactId>crabzilla-core</artifactId>
             <version>${crabzilla.version}</version>
         </dependency>
         <dependency>
-            <groupId>io.github.crabzilla.crabzilla</groupId>
+            <groupId>io.github.crabzilla</groupId>
             <artifactId>crabzilla-pg-command</artifactId>
             <version>${crabzilla.version}</version>
         </dependency>
         <dependency>
-            <groupId>io.github.crabzilla.crabzilla</groupId>
+            <groupId>io.github.crabzilla</groupId>
             <artifactId>crabzilla-json-jackson</artifactId>
             <version>${crabzilla.version}</version>
         </dependency>
@@ -104,6 +104,13 @@
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-smallrye-openapi</artifactId>
         </dependency>
+
+<!--        <dependency>-->
+<!--            <groupId>com.hazelcast</groupId>-->
+<!--            <artifactId>quarkus-hazelcast-client</artifactId>-->
+<!--            <version>4.0.0</version>-->
+<!--        </dependency>-->
+
         <dependency>
             <groupId>io.kotest</groupId>
             <artifactId>kotest-runner-junit5-jvm</artifactId>

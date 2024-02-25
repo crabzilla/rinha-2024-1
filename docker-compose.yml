@@ -7,16 +7,17 @@ services:
     hostname: api01
     ports:
       - "8081:8081"
+      - "8082:8081"
     environment:
-      - QUARKUS_HTTP_PORT=8081
-      - QUARKUS_DATASOURCE_REACTIVE_URL=postgresql://rinhadb:5432/rinhadb?loggerLevel=OFF
+      - APP_TRANSACOES_HTTP_PORT=8081
+      - APP_EXTRATO_HTTP_PORT=8082
+      - DATABASE_URL=postgresql://rinhadb:5432/rinhadb?loggerLevel=OFF
       - DATABASE_USERNAME=rinha
       - DATABASE_PASSWORD=rinha123
-      - QUARKUS_DATASOURCE_REACTIVE_CACHE_PREPARED_STATEMENTS=true
+      - DATABASE_POOL_MAX_SIZE=20
       - QUARKUS_BANNER_ENABLED=false
       - QUARKUS_MICROMETER_ENABLED=false
-      - QUARKUS_LOG_LEVEL=ERROR
-      - LOCKING_MODE=PG_ADVISORY
+      - QUARKUS_LOG_LEVEL=INFO
 #    healthcheck:
 #      test: [ "CMD", "curl", "-f", "http://127.0.0.1:8081/clientes/1/extrato" ]
 #      interval: 2s
@@ -28,27 +29,29 @@ services:
       nofile:
         soft: 1000000
         hard: 1000000
-    deploy:
-      resources:
-        limits:
-          cpus: "0.25"
-          memory: "80MB"
+#    deploy:
+#      resources:
+#        limits:
+#          cpus: "1"
+#          memory: "1024MB"
 
   api02:
     image: rodolfodpk/rinhadebackend-jvm:latest
     hostname: api02
     ports:
-      - "8082:8082"
+      - "8083:8082"
+      - "8084:8082"
     environment:
-      - QUARKUS_HTTP_PORT=8082
-      - QUARKUS_DATASOURCE_REACTIVE_URL=postgresql://rinhadb:5432/rinhadb?loggerLevel=OFF
+      - APP_TRANSACOES_HTTP_PORT=8083
+      - APP_EXTRATO_HTTP_PORT=8084
+      - DATABASE_URL=postgresql://rinhadb:5432/rinhadb?loggerLevel=OFF
       - DATABASE_USERNAME=rinha
       - DATABASE_PASSWORD=rinha123
-      - QUARKUS_DATASOURCE_REACTIVE_CACHE_PREPARED_STATEMENTS=true
+      - DATABASE_POOL_MAX_SIZE=20
       - QUARKUS_BANNER_ENABLED=false
       - QUARKUS_MICROMETER_ENABLED=false
-      - QUARKUS_LOG_LEVEL=ERROR
-      - LOCKING_MODE=PG_ADVISORY
+      - QUARKUS_LOG_LEVEL=INFO
+      - HAZELCAST_IP=hazelcast1
 #    healthcheck:
 #      test: [ "CMD", "curl", "-f", "http://127.0.0.1:8082/clientes/1/extrato" ]
 #      interval: 2s
@@ -60,11 +63,11 @@ services:
       nofile:
         soft: 1000000
         hard: 1000000
-    deploy:
-      resources:
-        limits:
-          cpus: "0.25"
-          memory: "80MB"
+#    deploy:
+#      resources:
+#        limits:
+#          cpus: "1"
+#          memory: "1024MB"
 
   nginx:
     image: nginx:latest
@@ -97,6 +100,8 @@ services:
   rinhadb:
     image: postgres:latest
     hostname: rinhadb
+    ports:
+      - "5432:5432"
     environment:
       - POSTGRES_DB=rinhadb
       - POSTGRES_USER=rinha
@@ -108,8 +113,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.75"
-          memory: "350MB"
+          cpus: "1"
+          memory: "1024MB"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready"]
       interval: 3s

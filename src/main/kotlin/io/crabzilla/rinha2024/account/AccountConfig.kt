@@ -69,7 +69,7 @@ object AccountConfig {
                         .put("descricao", event.description)
                         .put("realizada_em", event.date)
                 }
-            }
+            }.reversed()
         JsonObject().put("saldo", saldo).put("ultimas_transacoes", ultimasTransacoes)
     }
 

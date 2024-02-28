@@ -1,3 +1,4 @@
+\connect rinhadb;
 
 CREATE TYPE stream_status AS ENUM ('OPEN', 'CLOSED', 'MIGRATED');
 

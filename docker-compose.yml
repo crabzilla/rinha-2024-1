@@ -18,6 +18,8 @@ services:
       - QUARKUS_BANNER_ENABLED=false
       - QUARKUS_MICROMETER_ENABLED=false
       - QUARKUS_LOG_LEVEL=INFO
+#      - REDIS_HOST=redis
+#      - REDIS_PORT=6379
 #    healthcheck:
 #      test: [ "CMD", "curl", "-f", "http://127.0.0.1:8081/clientes/1/extrato" ]
 #      interval: 2s
@@ -25,15 +27,17 @@ services:
     depends_on:
       rinhadb:
         condition: service_healthy
+#      redis:
+#        condition: service_healthy
     ulimits:
       nofile:
         soft: 1000000
         hard: 1000000
-#    deploy:
-#      resources:
-#        limits:
-#          cpus: "1"
-#          memory: "1024MB"
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: "1024MB"
 
   api02:
     image: rodolfodpk/rinhadebackend-jvm:latest
@@ -51,7 +55,8 @@ services:
       - QUARKUS_BANNER_ENABLED=false
       - QUARKUS_MICROMETER_ENABLED=false
       - QUARKUS_LOG_LEVEL=INFO
-      - HAZELCAST_IP=hazelcast1
+#      - REDIS_HOST=redis
+#      - REDIS_PORT=6379
 #    healthcheck:
 #      test: [ "CMD", "curl", "-f", "http://127.0.0.1:8082/clientes/1/extrato" ]
 #      interval: 2s
@@ -59,15 +64,17 @@ services:
     depends_on:
       rinhadb:
         condition: service_healthy
+#      redis:
+#        condition: service_healthy
     ulimits:
       nofile:
         soft: 1000000
         hard: 1000000
-#    deploy:
-#      resources:
-#        limits:
-#          cpus: "1"
-#          memory: "1024MB"
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: "1024MB"
 
   nginx:
     image: nginx:latest
@@ -108,8 +115,8 @@ services:
       - POSTGRES_PASSWORD=rinha123
     volumes:
       - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
-      - ./postgresql.conf:/etc/postgresql/postgresql.conf
-    command: 'postgres -c config_file=/etc/postgresql/postgresql.conf'
+#      - ./postgresql.conf:/etc/postgresql/postgresql.conf
+#    command: 'postgres -c config_file=/etc/postgresql/postgresql.conf'
     deploy:
       resources:
         limits:
@@ -121,6 +128,17 @@ services:
       timeout: 2s
       retries: 10
       start_period: 3s
+
+#  redis:
+#    image: redis:latest
+#    hostname: redis
+#    ports:
+#      - "6379:6379"
+#    healthcheck:
+#     test: ["CMD", "redis-cli", "ping"]
+#     interval: 10s
+#     timeout: 5s
+#     retries: 5
 
 networks:
   default:

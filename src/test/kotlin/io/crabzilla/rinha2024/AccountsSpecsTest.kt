@@ -61,8 +61,8 @@ class AccountsSpecsTest : BehaviorSpec({
                 Then("the events are correct") {
                     session.appliedEvents() shouldBeEqual listOf(
                         CustomerAccountRegistered(id, limit = 10, balance = 5, date = now),
-                        DepositCommitted(amount = 20, description = "ya ya", balance = 25, date = now)
-                    )
+                        DepositCommitted(amount = 20, description = "ya ya", balance = 25, date = now),
+                     )
                 }
             }
         }
@@ -157,4 +157,5 @@ class AccountsSpecsTest : BehaviorSpec({
         }
     }
 
+    // TODO check transactions in descendent order
 })

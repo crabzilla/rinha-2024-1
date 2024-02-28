@@ -33,41 +33,40 @@ class AccountExtratoVerticle : AbstractCrabzillaVerticle() {
                 if (http.succeeded()) {
                     startPromise.complete()
                     logger.info("HTTP server started on port $httpPort")
-                } else {
-                    startPromise.fail(http.cause())
+                    return@listen
                 }
+                startPromise.fail(http.cause())
             }
 
         router.get("/clientes/:id/extrato")
-            .handler {
-                val id = it.request().getParam("id").toInt()
+            .handler { routingContext ->
+                val id = routingContext.request().getParam("id").toInt()
                 if ((id < 1 || id > 5)) {
-                    it.fail(404)
-                } else {
-                    getExtrato(id, crabzillaContext.pgPool)
-                        .onSuccess { json ->
-                            if (json == null) {
-                                it.fail(404)
-                                return@onSuccess
-                            }
-                            val saldo = json.getJsonObject("saldo")
-                            saldo.put("data_extrato", LocalDateTime.now())
-                            it.response()
-                                .putHeader("content-type", "application/json")
-                                .setStatusCode(200)
-                                .end(json.encode())
-                        }
-                        .onFailure { error ->
-                            logger.error("When getting extrato: {}", error.message)
-                            it.fail(error)
-                        }
+                    routingContext.response().setStatusCode(404).end()
+                    return@handler
                 }
+                getExtrato(id, crabzillaContext.pgPool)
+                    .onSuccess { json ->
+                        if (json == null) {
+                            routingContext.response().setStatusCode(404).end()
+                            return@onSuccess
+                        }
+                        val saldo = json.getJsonObject("saldo")
+                        saldo.put("data_extrato", LocalDateTime.now())
+                        routingContext.response()
+                            .putHeader("content-type", "application/json")
+                            .setStatusCode(200)
+                            .end(json.encode())
+                    }
+                    .onFailure { error ->
+                        logger.error("When getting extrato: {}", error?.message)
+                        routingContext.response().setStatusCode(500).end(error?.message)
+                    }
             }
-
     }
 
     private fun getExtrato(id: Int, pgPool: Pool): Future<JsonObject?> {
-         return pgPool
+        return pgPool
             .preparedQuery(SQL_SELECT)
             .execute(Tuple.of(id))
             .map {

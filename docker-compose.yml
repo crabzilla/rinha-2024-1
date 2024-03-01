@@ -11,10 +11,6 @@ services:
     environment:
       - APP_TRANSACOES_HTTP_PORT=8081
       - APP_EXTRATO_HTTP_PORT=8082
-      - DATABASE_URL=postgresql://rinhadb:5432/rinhadb?loggerLevel=OFF
-      - DATABASE_USERNAME=rinha
-      - DATABASE_PASSWORD=rinha123
-      - DATABASE_POOL_MAX_SIZE=20
       - QUARKUS_BANNER_ENABLED=false
       - QUARKUS_MICROMETER_ENABLED=false
       - QUARKUS_LOG_LEVEL=INFO
@@ -44,10 +40,6 @@ services:
     environment:
       - APP_TRANSACOES_HTTP_PORT=8083
       - APP_EXTRATO_HTTP_PORT=8084
-      - DATABASE_URL=postgresql://rinhadb:5432/rinhadb?loggerLevel=OFF
-      - DATABASE_USERNAME=rinha
-      - DATABASE_PASSWORD=rinha123
-      - DATABASE_POOL_MAX_SIZE=20
       - QUARKUS_BANNER_ENABLED=false
       - QUARKUS_MICROMETER_ENABLED=false
       - QUARKUS_LOG_LEVEL=INFO

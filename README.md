@@ -12,6 +12,7 @@ E trapaceei de 2 formas:
 
 1. O NGNX continua fazendo roud robin mas quando a app recebe a requisição, ela delega contas pares para app02 e ímpares para app01 via HTTP. 
 2. A app que atende a requisição usa apenas um COncurrentHashMap para armazenar o último estado da conta. TUdo na memória. E a operação de escrita ainda usa um syncronized.
+3. Nem estou testando com os limited de CPU e RAM da rinha.
 
 Isso tudo só pra testar a consistência da minha API. Mas mesmo assim, os testes continuam terríveis. 
 Nenhuma transação de crédito passa. Isso pode significar que minha API tá bugada. 

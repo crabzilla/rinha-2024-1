@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"
-         xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"
+         xmlns="http://maven.apache.org/POM/4.0.0">
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.crabzilla</groupId>
     <artifactId>rinha-2024-1</artifactId>
@@ -17,16 +17,16 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-        <quarkus.platform.version>3.7.3</quarkus.platform.version>
+        <quarkus.platform.version>3.8.1</quarkus.platform.version>
         <skipITs>true</skipITs>
         <surefire-plugin.version>3.2.5</surefire-plugin.version>
     </properties>
-<!--    <repositories>-->
-<!--        <repository>-->
-<!--            <id>jitpack.io</id>-->
-<!--            <url>https://jitpack.io</url>-->
-<!--        </repository>-->
-<!--    </repositories>-->
+        <repositories>
+            <repository>
+                <id>jitpack.io</id>
+                <url>https://jitpack.io</url>
+            </repository>
+        </repositories>
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -53,18 +53,6 @@
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-reactive-pg-client</artifactId>
-        </dependency>
-        <!--    <dependency>-->
-        <!--      <groupId>io.quarkus</groupId>-->
-        <!--      <artifactId>quarkus-cache</artifactId>-->
-        <!--    </dependency>-->
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-caffeine</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.quarkus</groupId>
             <artifactId>quarkus-arc</artifactId>
         </dependency>
         <dependency>
@@ -77,47 +65,17 @@
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-redis-client</artifactId>
+            <artifactId>quarkus-arc</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.github.crabzilla</groupId>
+            <groupId>io.github.crabzilla.crabzilla</groupId>
             <artifactId>crabzilla-core</artifactId>
-            <version>${crabzilla.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.github.crabzilla</groupId>
-            <artifactId>crabzilla-pg-command</artifactId>
-            <version>${crabzilla.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.github.crabzilla</groupId>
-            <artifactId>crabzilla-json-jackson</artifactId>
             <version>${crabzilla.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-stdlib-jdk8</artifactId>
         </dependency>
-        <!--    <dependency>-->
-        <!--      <groupId>com.github.f4b6a3</groupId>-->
-        <!--      <artifactId>uuid-creator</artifactId>-->
-        <!--      <version>5.3.7</version>-->
-        <!--    </dependency>-->
-        <!--    <dependency>-->
-        <!--      <groupId>com.fasterxml.uuid</groupId>-->
-        <!--      <artifactId>java-uuid-generator</artifactId>-->
-        <!--      <version>4.3.0</version>-->
-        <!--    </dependency>-->
-        <dependency>
-            <groupId>io.quarkus</groupId>
-            <artifactId>quarkus-smallrye-openapi</artifactId>
-        </dependency>
-
-<!--        <dependency>-->
-<!--            <groupId>com.hazelcast</groupId>-->
-<!--            <artifactId>quarkus-hazelcast-client</artifactId>-->
-<!--            <version>4.0.0</version>-->
-<!--        </dependency>-->
 
         <dependency>
             <groupId>io.kotest</groupId>

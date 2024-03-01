@@ -1,6 +1,5 @@
 package io.crabzilla.rinha2024
 
-import io.crabzilla.rinha2024.Util.getHostname
 import io.crabzilla.rinha2024.account.AccountExtratoVerticle
 import io.crabzilla.rinha2024.account.AccountTransactionVerticle
 import io.quarkus.runtime.StartupEvent
@@ -9,11 +8,9 @@ import jakarta.enterprise.context.ApplicationScoped
 import jakarta.enterprise.event.Observes
 import jakarta.inject.Inject
 import org.slf4j.LoggerFactory
-import java.net.InetAddress
-import java.net.UnknownHostException
 
 @ApplicationScoped
-class AppLifecycleBean {
+class ApplicationLifecycle {
 
     @Inject
     private lateinit var vertx: Vertx
@@ -25,7 +22,7 @@ class AppLifecycleBean {
     private lateinit var accountExtratoVerticle: AccountExtratoVerticle
 
     fun onStart(@Observes ev: StartupEvent) {
-        logger.info("Starting verticles for partition {}", getHostname())
+        logger.info("Starting verticles")
         vertx.deployVerticle(accountExtratoVerticle)
             .compose { vertx.deployVerticle(accountTransactionVerticle) }
             .onSuccess { logger.info("Successfully deployed verticles") }
@@ -33,6 +30,6 @@ class AppLifecycleBean {
     }
 
     companion object {
-        private val logger = LoggerFactory.getLogger(AppLifecycleBean::class.java)
+        private val logger = LoggerFactory.getLogger(ApplicationLifecycle::class.java)
     }
 }

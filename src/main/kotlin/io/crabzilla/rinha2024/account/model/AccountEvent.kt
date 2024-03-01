@@ -41,20 +41,28 @@ sealed class CustomerAccountEvent(open val date: LocalDateTime) {
 
 val accountEvolveFn: (CustomerAccount, CustomerAccountEvent) -> CustomerAccount =
     { state: CustomerAccount, event: CustomerAccountEvent ->
-        fun newList(): MutableList<CustomerAccountEvent> {
-            state.lastTenTransactions.add(event)
-            return state.lastTenTransactions
+        fun newList(): List<CustomerAccountEvent> {
+            val newList = state.lastTenTransactions.take(9).toMutableList()
+            newList.addFirst(event)
+            //  println("Transactions before ${state.lastTenTransactions.size} after ${newList.size}")
+            return newList
         }
         when (event) {
-            is CustomerAccountRegistered -> CustomerAccount(id = event.id, limit = event.limit, balance = event.balance)
-            is DepositCommitted -> state.copy(
-                balance = state.balance.plus(event.amount),
-                lastTenTransactions = newList()
-            )
 
-            is WithdrawCommitted -> state.copy(
-                balance = state.balance.minus(event.amount),
-                lastTenTransactions = newList()
-            )
+            is CustomerAccountRegistered -> CustomerAccount(id = event.id, limit = event.limit, balance = event.balance)
+
+            is DepositCommitted -> {
+                state.copy(
+                    balance = state.balance.plus(event.amount),
+                    lastTenTransactions = newList()
+                )
+            }
+
+            is WithdrawCommitted -> {
+                state.copy(
+                    balance = state.balance.minus(event.amount),
+                    lastTenTransactions = newList()
+                )
+            }
         }
     }

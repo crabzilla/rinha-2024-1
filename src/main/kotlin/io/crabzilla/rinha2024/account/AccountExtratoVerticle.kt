@@ -1,19 +1,17 @@
 package io.crabzilla.rinha2024.account
 
-import io.crabzilla.rinha2024.AbstractCrabzillaVerticle
-import io.vertx.core.Future
+import io.crabzilla.rinha2024.account.model.CustomerAccount
+import io.crabzilla.rinha2024.account.model.CustomerAccountEvent
 import io.vertx.core.Promise
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.web.Router
-import io.vertx.sqlclient.Pool
-import io.vertx.sqlclient.Tuple
 import jakarta.enterprise.context.ApplicationScoped
 import org.eclipse.microprofile.config.inject.ConfigProperty
 import org.slf4j.LoggerFactory
 import java.time.LocalDateTime
 
 @ApplicationScoped
-class AccountExtratoVerticle : AbstractCrabzillaVerticle() {
+class AccountExtratoVerticle : AbstractAccountVerticle() {
 
     @ConfigProperty(name = "app.extrato.http.port")
     private lateinit var httpPort: String
@@ -21,8 +19,6 @@ class AccountExtratoVerticle : AbstractCrabzillaVerticle() {
     override fun start(startPromise: Promise<Void>) {
 
         logger.info("Starting")
-
-        super.start(startPromise)
 
         val router = Router.router(vertx)
 
@@ -45,42 +41,45 @@ class AccountExtratoVerticle : AbstractCrabzillaVerticle() {
                     routingContext.response().setStatusCode(404).end()
                     return@handler
                 }
-                getExtrato(id, crabzillaContext.pgPool)
-                    .onSuccess { json ->
-                        if (json == null) {
-                            routingContext.response().setStatusCode(404).end()
-                            return@onSuccess
-                        }
-                        val saldo = json.getJsonObject("saldo")
-                        saldo.put("data_extrato", LocalDateTime.now())
-                        routingContext.response()
-                            .putHeader("content-type", "application/json")
-                            .setStatusCode(200)
-                            .end(json.encode())
-                    }
-                    .onFailure { error ->
-                        logger.error("When getting extrato: {}", error?.message)
-                        routingContext.response().setStatusCode(500).end(error?.message)
-                    }
-            }
-    }
-
-    private fun getExtrato(id: Int, pgPool: Pool): Future<JsonObject?> {
-        return pgPool
-            .preparedQuery(SQL_SELECT)
-            .execute(Tuple.of(id))
-            .map {
-                if (it.rowCount() == 1) {
-                    it.first().getJsonObject("view_model")
-                } else {
-                    null
-                }
+                val state = SHARED_DATABASE[id]
+                logger.debug("Found state {}", state)
+                val view = mapStateToExtratoView(state!!)
+                val saldo = view.getJsonObject("saldo")
+                saldo.put("data_extrato", LocalDateTime.now())
+                routingContext.response()
+                    .putHeader("content-type", "application/json")
+                    .setStatusCode(200)
+                    .end(view.encode())
             }
     }
 
     companion object {
+
         private val logger = LoggerFactory.getLogger(AccountExtratoVerticle::class.java)
-        private const val SQL_SELECT = "SELECT view_model FROM accounts_view WHERE id = $1"
+
+        val mapStateToExtratoView: (CustomerAccount) -> JsonObject = { state ->
+            val saldo = JsonObject()
+                .put("total", state.balance)
+                .put("limite", state.limit)
+            val ultimasTransacoes = state.lastTenTransactions
+                .map { event ->
+                    when (event) {
+                        is CustomerAccountEvent.CustomerAccountRegistered -> TODO()
+                        is CustomerAccountEvent.DepositCommitted -> JsonObject()
+                            .put("valor", event.amount)
+                            .put("tipo", "c")
+                            .put("descricao", event.description)
+                            .put("realizada_em", event.date)
+
+                        is CustomerAccountEvent.WithdrawCommitted -> JsonObject()
+                            .put("valor", event.amount)
+                            .put("tipo", "d")
+                            .put("descricao", event.description)
+                            .put("realizada_em", event.date)
+                    }
+                }
+            JsonObject().put("saldo", saldo).put("ultimas_transacoes", ultimasTransacoes)
+        }
     }
 
 }

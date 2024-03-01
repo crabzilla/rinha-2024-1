@@ -15,6 +15,7 @@ import io.github.crabzilla.core.Session
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.BehaviorSpec
 import io.kotest.matchers.equals.shouldBeEqual
+import io.kotest.matchers.shouldBe
 import java.time.LocalDateTime
 
 class AccountsSpecsTest : BehaviorSpec({
@@ -29,6 +30,16 @@ class AccountsSpecsTest : BehaviorSpec({
         decideFunction = accountDecideFn,
         injectFunction = { account -> account.timeGenerator = { now }; account }
     )
+
+    fun checkTransactionsOrder(transactions: List<CustomerAccountEvent>): Boolean {
+        // Check if the list is sorted in descending order by date
+        for (i in 0 until transactions.size - 1) {
+            if (transactions[i].date < transactions[i + 1].date) {
+                return false
+            }
+        }
+        return true
+    }
 
     Given("a RegisterNewAccount command #1") {
         val command = RegisterNewAccount(id, limit = 10, balance = 5)
@@ -62,7 +73,7 @@ class AccountsSpecsTest : BehaviorSpec({
                     session.appliedEvents() shouldBeEqual listOf(
                         CustomerAccountRegistered(id, limit = 10, balance = 5, date = now),
                         DepositCommitted(amount = 20, description = "ya ya", balance = 25, date = now),
-                     )
+                    )
                 }
             }
         }
@@ -113,7 +124,14 @@ class AccountsSpecsTest : BehaviorSpec({
                         session.reset().decide(command1).decide(command2)
                     }
                 Then("the exception is correct") {
-                    exception shouldBeEqual LimitExceededException(amount = 16, limit = 10)
+                    val state = session.currentState()
+                    exception shouldBeEqual LimitExceededException(
+                        accountId = state.id,
+                        currentBalance = state.balance,
+                        newBalance =  state.balance.minus(command2.amount),
+                        amountRequested = command2.amount,
+                        limit = state.limit
+                        )
                 }
                 Then("the state is correct") {
                     session.currentState() shouldBeEqual CustomerAccount(id, limit = 10, balance = 5)
@@ -150,10 +168,15 @@ class AccountsSpecsTest : BehaviorSpec({
             session.reset()
             commands.forEach {
                 session.decide(it)
+                assert(true)
             }
         }
         Then("Only the last 10 events are within lastTenTransactions") {
             session.currentState().lastTenTransactions.size shouldBeEqual 10
+        }
+        Then("LastTenTransactions is sorted by date in descendent order") {
+            print(session.currentState())
+            checkTransactionsOrder(session.currentState().lastTenTransactions) shouldBe true
         }
     }
 

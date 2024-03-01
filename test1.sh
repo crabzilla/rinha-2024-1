@@ -1,1 +1,0 @@
-for i in {1..100}; do http http://localhost:8080/clientes/1/extrato; done

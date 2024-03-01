@@ -11,11 +11,12 @@ data class CustomerAccount(
     val id: Int,
     val limit: Int,
     val balance: Int = 0,
-    val lastTenTransactions: MutableList<CustomerAccountEvent> = withMaxSize(10),
+    val lastTenTransactions: List<CustomerAccountEvent> = listOf(),
 ) {
     // This state model also have the last 10 transactions. Just to skip read/view model and optimize it for perf.
 
     @JsonIgnore
+    @Transient
     var timeGenerator: () -> LocalDateTime = { LocalDateTime.now() }
 
     fun register(id: Int, limit: Int, balance: Int): List<CustomerAccountEvent> {
@@ -43,7 +44,13 @@ data class CustomerAccount(
     fun withdraw(amount: Int, description: String): List<CustomerAccountEvent> {
         val newBalance = balance.minus(amount)
         if (newBalance + limit < 0) {
-            throw LimitExceededException(amount, limit)
+            throw LimitExceededException(
+                accountId = id,
+                currentBalance = balance,
+                newBalance = newBalance,
+                amountRequested = amount,
+                limit = limit
+            )
         }
         return listOf(
             WithdrawCommitted(
@@ -54,18 +61,22 @@ data class CustomerAccount(
             ),
         )
     }
-}
 
-data class LimitExceededException(val amount: Int, val limit: Int) :
-    RuntimeException("Amount $amount exceeds limit $limit")
-
-fun <T> withMaxSize(maxSize: Int): MutableList<T> {
-    return object : ArrayList<T>(maxSize) {
-        override fun add(element: T): Boolean {
-            if (size >= maxSize) {
-                removeAt(0) // Remove the oldest element
-            }
-            return super.add(element)
+    override fun toString(): String {
+        val transactions = if (lastTenTransactions.isNotEmpty()) {
+            lastTenTransactions.joinToString(separator = "\n") { it.toString() }
+        } else {
+            "No transactions available"
         }
+        return "Customer Account - ID: $id, Limit: $limit, Balance: $balance, Transactions:\n$transactions"
     }
 }
+
+data class LimitExceededException(
+    val accountId: Int,
+    val currentBalance: Int,
+    val newBalance: Int,
+    val amountRequested: Int,
+    val limit: Int
+) :
+    RuntimeException("Account $accountId: Can't withdraw $amountRequested: balance is $currentBalance final balance would be $newBalance and the limit is $limit")

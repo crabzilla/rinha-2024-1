@@ -18,26 +18,22 @@ services:
       - QUARKUS_BANNER_ENABLED=false
       - QUARKUS_MICROMETER_ENABLED=false
       - QUARKUS_LOG_LEVEL=INFO
-#      - REDIS_HOST=redis
-#      - REDIS_PORT=6379
-#    healthcheck:
-#      test: [ "CMD", "curl", "-f", "http://127.0.0.1:8081/clientes/1/extrato" ]
-#      interval: 2s
-#      retries: 10
-    depends_on:
-      rinhadb:
-        condition: service_healthy
-#      redis:
-#        condition: service_healthy
-    ulimits:
-      nofile:
-        soft: 1000000
-        hard: 1000000
+    #    healthcheck:
+    #      test: [ "CMD", "curl", "-f", "http://127.0.0.1:8081/clientes/1/extrato" ]
+    #      interval: 2s
+    #      retries: 10
+    #    depends_on:
+    #      rinhadb:
+    #        condition: service_healthy
+    #    ulimits:
+    #      nofile:
+    #        soft: 1000000
+    #        hard: 1000000
     deploy:
       resources:
         limits:
           cpus: "1"
-          memory: "1024MB"
+          memory: "250MB"
 
   api02:
     image: rodolfodpk/rinhadebackend-jvm:latest
@@ -55,26 +51,25 @@ services:
       - QUARKUS_BANNER_ENABLED=false
       - QUARKUS_MICROMETER_ENABLED=false
       - QUARKUS_LOG_LEVEL=INFO
-#      - REDIS_HOST=redis
-#      - REDIS_PORT=6379
-#    healthcheck:
-#      test: [ "CMD", "curl", "-f", "http://127.0.0.1:8082/clientes/1/extrato" ]
-#      interval: 2s
-#      retries: 10
-    depends_on:
-      rinhadb:
-        condition: service_healthy
-#      redis:
-#        condition: service_healthy
-    ulimits:
-      nofile:
-        soft: 1000000
-        hard: 1000000
+    #      - HAZELCAST_IP=hazelcast1
+    #    healthcheck:
+    #      test: [ "CMD", "curl", "-f", "http://127.0.0.1:8082/clientes/1/extrato" ]
+    #      interval: 2s
+    #      retries: 10
+    #    depends_on:
+    #      rinhadb:
+    #        condition: service_healthy
+    #      redis:
+    #        condition: service_healthy
+    #    ulimits:
+    #      nofile:
+    #        soft: 1000000
+    #        hard: 1000000
     deploy:
       resources:
         limits:
           cpus: "1"
-          memory: "1024MB"
+          memory: "250MB"
 
   nginx:
     image: nginx:latest
@@ -85,17 +80,17 @@ services:
     depends_on:
       - api01
       - api02
-#      api01:
-#        condition: service_healthy
-#      api02:
-#        condition: service_healthy
+    #      api01:
+    #        condition: service_healthy
+    #      api02:
+    #        condition: service_healthy
     ulimits:
       nofile:
         soft: 1000000
         hard: 1000000
     healthcheck:
       # test: ["CMD", "curl", "-f", "http://127.0.0.1:9999/clientes/1/extrato"]
-      test: ["CMD", "sleep", "5"]
+      test: [ "CMD", "sleep", "5" ]
       interval: 3s
       retries: 15
     deploy:
@@ -103,42 +98,6 @@ services:
         limits:
           cpus: "0.25"
           memory: "40MB"
-
-  rinhadb:
-    image: postgres:latest
-    hostname: rinhadb
-    ports:
-      - "5432:5432"
-    environment:
-      - POSTGRES_DB=rinhadb
-      - POSTGRES_USER=rinha
-      - POSTGRES_PASSWORD=rinha123
-    volumes:
-      - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
-#      - ./postgresql.conf:/etc/postgresql/postgresql.conf
-#    command: 'postgres -c config_file=/etc/postgresql/postgresql.conf'
-    deploy:
-      resources:
-        limits:
-          cpus: "1"
-          memory: "1024MB"
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready"]
-      interval: 3s
-      timeout: 2s
-      retries: 10
-      start_period: 3s
-
-#  redis:
-#    image: redis:latest
-#    hostname: redis
-#    ports:
-#      - "6379:6379"
-#    healthcheck:
-#     test: ["CMD", "redis-cli", "ping"]
-#     interval: 10s
-#     timeout: 5s
-#     retries: 5
 
 networks:
   default:

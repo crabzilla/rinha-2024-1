@@ -8,7 +8,7 @@ TODO : contar a estoria toda
 
 Resumindo: ainda não desisti, mas por resolvi testar só com o crabzilla-core, que tem só uma classe e nenhuma dependência.
 
-E trapaceei de 2 formas:
+E trapaceei ao menos de 3 formas:
 
 1. O NGNX continua fazendo roud robin mas quando a app recebe a requisição, ela delega contas pares para app02 e ímpares para app01 via HTTP. 
 2. A app que atende a requisição usa apenas um COncurrentHashMap para armazenar o último estado da conta. TUdo na memória. E a operação de escrita ainda usa um syncronized.
